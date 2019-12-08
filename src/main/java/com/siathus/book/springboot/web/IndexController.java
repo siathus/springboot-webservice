@@ -1,5 +1,6 @@
 package com.siathus.book.springboot.web;
 
+import com.siathus.book.springboot.config.auth.LoginUser;
 import com.siathus.book.springboot.config.auth.dto.SessionUser;
 import com.siathus.book.springboot.domain.user.User;
 import com.siathus.book.springboot.service.posts.PostsService;
@@ -23,11 +24,13 @@ public class IndexController {
         1. Model
             - 서버 템플릿 엔진에서 사용할 수 있는 객체를 저장할 수 있다.
             - postsService.findAllDesc()로 가져온 결과를 "posts"라는 key값으로 index.mustache에 전달한다.
+        2. @LoginUser SessionUser user
+            - 기존에 (SessionUser) httpSession.getAttribute("user")로 가져오던 세션 정보 값을 개선.
+            - 어느 컨트롤러든지 @LoginUser만 사용하면 세션 정보를 가져올 수 있다.
      */
     @GetMapping("/")
-    public String index(Model model) {  // 1
+    public String index(Model model, @LoginUser SessionUser user) {  // 1, 2
         model.addAttribute("posts", postsService.findAllDesc());
-        SessionUser user = (SessionUser) httpSession.getAttribute("user");
 
         if (user != null) {
             model.addAttribute("userName", user.getName());
