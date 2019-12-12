@@ -14,11 +14,29 @@ cache:
 
 script: "./gradlew clean build"
 
+
+before_install:
+  - chmod +x gradlew
+
+before_deploy:
+  - zip -r springboot-webservice
+  - mkdir -p deploy
+  - mv springboot-webservice.zip deploy/springboot-webservice.zip
+
+deploy:
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
+    bucket: springboot-build
+    region: ap-northeast-2
+    skip_cleanup: true
+    acl: private        # zip 파일 접근을 private로 설정
+    local_dir: deploy   # before_deploy에서 생성한 디렉토리
+    wait-until-deployed: true
+
+
 # CI 실행 완료 시 메일로 알림
 notifications:
   email:
     recipients:
       - sklim0932@gmail.com
-
-before_install:
-  - chmod +x gradlew
